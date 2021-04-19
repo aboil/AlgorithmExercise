@@ -180,11 +180,11 @@ class Solution {
 
 **描述：**根据一棵树的中序遍历与后序遍历构造二叉树。
 
-<img src="算法.assets/image-20210415105102708.png" alt="image-20210415105102708" style="zoom: 30%;" />
+<img src="Tree.assets/image-20210415105102708.png" alt="image-20210415105102708" style="zoom: 30%;" />
 
 还原过程：
 
-<img src="算法.assets/image-20210415105220648.png" alt="image-20210415105220648" style="zoom:60%;" />
+<img src="Tree.assets/image-20210415105220648.png" alt="image-20210415105220648" style="zoom:60%;" />
 
 ```java
 class Solution {
@@ -272,7 +272,7 @@ class Solution {
 
 初始状态下，所有 next 指针都被设置为 NULL。
 
-<img src="算法.assets/image-20210415105732526.png" alt="image-20210415105732526" style="zoom:33%;" />
+<img src="Tree.assets/image-20210415105732526.png" alt="image-20210415105732526" style="zoom:33%;" />
 
 下面给出两种解法：
 
