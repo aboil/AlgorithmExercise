@@ -209,10 +209,10 @@ class Solution {
             return null;
         }
 
-        int root = post[pe];
-        int ri = memo.get(root);
+        int root_value = post[pe];
+        int ri = memo.get(root_value);
 
-        TreeNode node = new TreeNode(root);
+        TreeNode node = new TreeNode(root_value);
         node.left = buildTree(is, ri-1, ps, ps+ri-is-1);
         node.right = buildTree(ri+1, ie, ps+ri-is, pe-1);
         return node;
@@ -231,26 +231,25 @@ class Solution {
 ```java
 class Solution {
     HashMap<Integer, Integer> memo = new HashMap<>();
-    int[] post;
-    public TreeNode buildTree(int[] inorder, int[] postorder) {
+    int[] pre;
+    public TreeNode buildTree(int[] preorder, int[] inorder) {
         for(int i=0; i < inorder.length ; ++i){
             memo.put(inorder[i], i);
         }
-        post = postorder;
-        TreeNode root = buildTree(0, inorder.length-1, 0, post.length-1);
+        pre = postorder;
+        TreeNode root = buildTree(0, inorder.length-1, 0, pre.length-1);
         return root;
     }
     public TreeNode buildTree(int is, int ie, int ps, int pe){
-        if(ie < is || pe < ps){
+        if(ie<is || pe<ps){
             return null;
         }
-
-        int root = post[pe];
-        int ri = memo.get(root);
-
-        TreeNode node = new TreeNode(root);
-        node.left = buildTree(is, ri-1, ps, ps+ri-is-1);
-        node.right = buildTree(ri+1, ie, ps+ri-is, pe-1);
+        int root_value = preorder[ps];
+        int ri = memo.get(root_value);
+        
+        TreeNode node = new TreeNode(root_value);
+        node.left = buildTree(is, ri-1, ps+1, ps+ri-is);
+        node.right = buildTree(ri+1, ie, ps+ri-is+1, pe);
         return node;
     }
 }
@@ -492,6 +491,12 @@ public class Solution {
 ```
 
 
+
+
+
+
+
+# 剑指offer
 
 
 
@@ -1198,7 +1203,6 @@ public class Solution {
             hm.put(arr[i], i);
         }
         return maxLen;
-        
     }
 }
 ```
@@ -1263,6 +1267,345 @@ public class Solution {
 
 ---
 
+### NC_3 链表中环的入口节点
+
+题目描述
+
+对于一个给定的链表，返回环的入口节点，如果没有环，返回null
+
+拓展：
+
+你能给出不利用额外空间的解法么？
+
+```java
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow=head, fast=head;
+        while(fast!=null && fast.next!=null){
+            fast = fast.next.next;
+            slow = slow.next;
+            if(slow==fast){
+                fast = head;
+                while(slow!=fast){
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+}
+```
+
+---
+
+### NC_52 括号序列
+
+**题目描述：**
+
+给出一个**仅包含**字符'(',')','{','}','['和']',的字符串，判断给出的字符串是否是合法的括号序列
+括号必须以正确的顺序关闭，"()"和"()[]{}"都是合法的括号序列，但"(]"和"([)]"不合法。
+
+```java
+public class Solution {
+    /**
+     * 
+     * @param s string字符串 
+     * @return bool布尔型
+     */
+    public boolean isValid (String s) {
+        // write code here
+        Stack<Character> stack = new Stack<Character>();
+        for(int i=0; i<s.length(); i++){
+            char i_char = s.charAt(i);
+            if(stack.empty()){
+                stack.push(i_char);
+            }else if(stack.peek() == '(' && i_char == ')'){
+                stack.pop();
+            }else if(stack.peek() == '[' && i_char == ']'){
+                stack.pop();
+            }else if(stack.peek() == '{' && i_char == '}'){
+                stack.pop();
+            }else{
+                stack.push(i_char);
+            }
+        }
+        return stack.empty();
+    }
+}
+```
+
+---
+
+### NC_53 删除列表的倒数第n个节点
+
+描述：给定一个链表，删除链表的倒数第 n 个节点并返回链表的头指针
+例如，
+
+给出的链表为: 1→2→3→4→5, n= 2.
+删除了链表的倒数第 n 个节点之后,链表变为 1→2→3→5.
+
+备注：
+
+题目保证 n 一定是有效的
+请给出请给出时间复杂度为 O(n)  的算法
+
+```java
+public class Solution {
+    /**
+     * 
+     * @param head ListNode类 
+     * @param n int整型 
+     * @return ListNode类
+     */
+    public ListNode removeNthFromEnd (ListNode head, int n) {
+        // write code here
+        int len = 0;
+        ListNode p = new ListNode(-1);
+        p.next = head;
+        while(head!=null){
+            head = head.next;
+            len++;
+        }
+        head = p;
+        while(true){
+            if(len == n){
+                if(head.next != null)
+                    head.next = head.next.next;
+                break;
+            }
+            head = head.next; 
+            len -- ;
+        }
+            
+        return p.next;
+        
+        
+        
+        /// 双指针怎么解！！！！
+//         ListNode p = new ListNode(-1,head);
+//         ListNode t = head;
+//         for(int i=0; i<n; i++){
+//             t = t.next;
+//         }
+//         head = p;
+//         while(t!=null){
+//             head = head.next;
+//             t = t.next;
+//         }
+//         head.next = head.next.next;
+//         return p.next;
+    }
+}
+```
+
+注：双指针思路：初始时，让快指针从第n个开始，慢指针从0开始，则当快指针到达最后时，慢指针就到了要被删除的节点位置，
+
+---
+
+### NC_1 大数加法
+
+**描述：**以字符串的形式读入两个数字，编写一个函数计算它们的和，以字符串形式返回。
+
+（字符串长度不大于100000，保证字符串仅由'0'~'9'这10种字符组成）
+
+```java
+public class Solution {
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     * 计算两个数之和
+     * @param s string字符串 表示第一个整数
+     * @param t string字符串 表示第二个整数
+     * @return string字符串
+     */
+    public String solve (String s, String t) {
+        // write code here
+        StringBuilder res = new StringBuilder("");
+        int i = s.length() - 1, j = t.length() - 1, carry = 0;
+        while(i >= 0 || j >= 0){
+            int n1 = i >= 0 ? s.charAt(i) - '0' : 0;
+            int n2 = j >= 0 ? t.charAt(j) - '0' : 0;
+            int tmp = n1 + n2 + carry;
+            carry = tmp / 10;
+            res.append(tmp % 10);
+            i--; j--;
+        }
+        if(carry == 1) res.append(1);
+        return res.reverse().toString();
+    }
+}
+```
+
+---
+
+### NC_14 二叉树的之字形层序遍历
+
+描述：题目描述
+
+给定一个二叉树，返回该二叉树的之字形层序遍历，（第一层从左向右，下一层从右向左，一直这样交替）
+例如：
+给定的二叉树是{3,9,20,#,#,15,7},
+
+![img](_AlgorithmCollection.assets/999991351_1596788654427_630E55F47DBAFBF72C88E265929E43F7)
+该二叉树之字形层序遍历的结果是
+
+> [
+>
+> [3],
+>
+> [20,9],
+>
+> [15,7]
+>
+> ]
+
+```java
+public class Solution {
+    /**
+     * 
+     * @param root TreeNode类 
+     * @return int整型ArrayList<ArrayList<>>
+     */
+    public ArrayList<ArrayList<Integer>> zigzagLevelOrder (TreeNode root) {
+        // write code here
+        ArrayList<ArrayList<Integer>> res = new ArrayList<ArrayList<Integer>>();
+        if(root==null){
+            return res;
+        }
+        
+        Queue<TreeNode> queue = new LinkedList<TreeNode>();
+        queue.offer(root);
+        int n_level = 1;
+        while(!queue.isEmpty()){
+            int currentLevelSize = queue.size();
+            ArrayList<Integer> level = new ArrayList<Integer>();
+            for(int i=0; i<currentLevelSize; i++){
+                TreeNode node = queue.poll();
+                if(n_level%2 == 0){
+                    level.add(0, node.val);		// 重点在这，在第0位插入
+                }else{
+                    level.add(node.val);
+                }
+                
+                if(node.left != null){
+                    queue.offer(node.left);
+                }
+                if(node.right != null){
+                    queue.offer(node.right);
+                }
+            }
+            res.add(level);
+            n_level ++;
+        }
+        return res;
+    }
+}
+```
+
+---
+
+### NC_127 最长公共子串
+
+
+
+**题目描述**
+
+给定两个字符串str1和str2,输出两个字符串的最长公共子串
+
+题目保证str1和str2的最长公共子串存在且唯一。
+
+示例1
+
+**输入**
+
+```
+"1AB2345CD","12345EF"
+```
+
+**返回值**
+
+```
+"2345"
+```
+
+代码参考：
+
+```java
+public class Solution {
+    /**
+     * longest common substring
+     * @param str1 string字符串 the string
+     * @param str2 string字符串 the string
+     * @return string字符串
+     */
+    public String LCS (String str1, String str2) {
+        // write code here
+//         int maxLength = 0;
+//         int index = 0;
+//         for(int i = 0; i < str2.length(); i++){
+//             for(int j = i+1; j <= str2.length(); j++){
+//                 if(str1.contains(str2.substring(i, j)) ){
+//                     if(maxLength < j-i){
+//                         maxLength = j-i;
+//                         index = i;
+//                     }
+//                 } else break;
+//             }
+//         }
+//         if( maxLength == 0 ){ //没有相同的字符串
+//             return "-1";
+//         }
+//         return str2.substring(index,index + maxLength);
+        
+        
+        // 法2、动态规划
+        int[][] nums = new int[str1.length()+1][str2.length()+1];	// 里面的值被初始化为0
+        if(str1 == null || str2 == null || str1.equals("") || str2.equals("")){
+            return "-1";
+        }
+        int maxLength = 0;   //记录最长公共子串长度
+        int end = 0;          //记录最长子串最后一个字符的下标
+        int m = str1.length();
+        int n = str2.length();
+
+        // 初始化表格边界
+		// for(int i = 0; i <= m; ++i) nums[i][0] = 0;
+		// for(int j = 0; j <= n; ++j) nums[0][j] = 0;
+
+        // 循环"填表"
+        for (int i=1; i<=m; i++){
+            for (int j=1; j<=n; j++){
+                if (str1.charAt(i-1)==str2.charAt(j-1)){
+                    nums[i][j]=nums[i-1][j-1]+1;
+                }else {
+                    nums[i][j]=0;
+                }
+                // 记录最长子串的长度和当前下标
+                if (nums[i][j] >= maxLength){
+                    maxLength = nums[i][j];
+                    end = j-1;
+                }
+            }
+        }
+        // 如果没有公共子串
+        if (maxLength == 0){
+            return "-1";
+        }else {
+            return str2.substring(end-maxLength+1, end+1);
+        }
+    }
+}
+```
+
+
+
+
+
+
+
+---
+
 ### N_126 [换钱的最少货币数](# 2、零钱兑换)
 
 跳转：[动态规划-2.零钱兑换](#2、零钱兑换) 
@@ -1271,3 +1614,795 @@ public class Solution {
 
 ---
 
+### N_66 两个链表的第一个公共结点
+
+**题目描述：**输入两个无环的单链表，找出它们的第一个公共结点。（注意因为传入数据是链表，所以错误测试数据的提示是用其他方式显示的，保证传入数据是正确的）
+
+```java
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+public class Solution {
+    public ListNode FindFirstCommonNode(ListNode pHead1, ListNode pHead2) {
+        if(pHead1 == null || pHead2 == null){
+            return null;
+        }
+        ListNode p1 = pHead1, p2 = pHead2;
+        while(p1 != p2){
+            p1 = p1==null?pHead2:p1.next;
+            p2 = p2==null?pHead1:p2.next;
+        }
+        return p1;
+    }
+}
+```
+
+
+
+---
+
+### N_40 两个链表生成相加链表
+
+**题目描述**：假设链表中每一个节点的值都在 0 - 9 之间，那么链表整体就可以代表一个整数。
+
+给定两个这种链表，请生成代表两个整数相加值的结果链表。
+
+例如：链表 1 为 9->3->7，链表 2 为 6->3，最后生成新的结果链表为 1->0->0->0。
+
+```java
+import java.util.*;
+
+/*
+ * public class ListNode {
+ *   int val;
+ *   ListNode next = null;
+ * }
+ */
+
+public class Solution {
+    /**
+     * 
+     * @param head1 ListNode类 
+     * @param head2 ListNode类 
+     * @return ListNode类
+     */
+    
+    public ListNode addInList (ListNode head1, ListNode head2) {
+        // write code here
+        if(head1 == null) return head2;
+        if(head2 == null) return head1;
+        Stack<Integer> s1 = new Stack<Integer>();
+        Stack<Integer> s2 = new Stack<Integer>();
+        while(head1!=null){
+            s1.add(head1.val);
+            head1 = head1.next;
+        }
+        while(head2!=null){
+            s2.add(head2.val);
+            head2 = head2.next;
+        }
+        ListNode head = new ListNode(-1);
+        ListNode temp = head;
+        int flag = 0;
+        while(!s1.isEmpty() || !s2.isEmpty()){
+            int v1 = 0, v2 = 0;
+            if(!s1.isEmpty()){
+                v1 = s1.pop();
+            }
+            if(!s2.isEmpty()){
+                v2 = s2.pop();
+            }
+            temp.next = new ListNode((v1+v2 + flag)%10);
+            flag = (int)(v1+v2 + flag)/10;
+            temp = temp.next;
+            
+        }
+        if(flag == 1)    temp.next = new ListNode(1);
+        
+        return reverse(head.next);
+    }
+    private ListNode reverse(ListNode head){
+        ListNode p = null, temp = null;
+        while(head!=null){
+            temp = head.next;
+            head.next = p;
+            p = head;
+            head = temp;
+        }
+        return p;
+    }
+}
+```
+
+
+
+---
+
+### N_102 在二叉树中找到两个节点的最近公共祖先
+
+**题目描述**：给定一棵二叉树(保证非空)以及这棵树上的两个节点对应的val值 o1 和 o2，请找到 o1 和 o2 的最近公共祖先节点。
+
+注：本题保证二叉树中每个节点的val值均不相同。
+
+```java
+import java.util.*;
+
+/*
+ * public class TreeNode {
+ *   int val = 0;
+ *   TreeNode left = null;
+ *   TreeNode right = null;
+ * }
+ */
+
+public class Solution {
+    /**
+     * 
+     * @param root TreeNode类 
+     * @param o1 int整型 
+     * @param o2 int整型 
+     * @return int整型
+     */
+    public int lowestCommonAncestor (TreeNode root, int o1, int o2) {
+        // write code here
+        return commonAncestor(root, o1, o2).val;
+    }
+    public TreeNode commonAncestor (TreeNode root, int o1, int o2) {
+        if (root == null || root.val == o1 || root.val == o2) { // 超过叶子节点，或者root为p、q中的一个直接返回
+            return root;
+        }
+        TreeNode left = commonAncestor(root.left,o1,o2); // 返回左侧的p\q节点
+        TreeNode right = commonAncestor(root.right,o1,o2); // 返回右侧的p\q节点
+        if (left == null) {  // 都在右侧
+            return right;
+        }
+        if (right == null) { // 都在左侧
+            return left;
+        }
+        return root; // 在左右两侧
+    }
+}
+```
+
+
+
+---
+
+### N_103 反转字符串
+
+**题目描述**：写出一个程序，接受一个字符串，然后输出该字符串反转后的字符串。（字符串长度不超过1000），如输入："abcd"。返回值："dcba"
+
+```java
+import java.util.*;
+
+
+public class Solution {
+    /**
+     * 反转字符串
+     * @param str string字符串 
+     * @return string字符串
+     */
+    public String solve (String str) {
+        // write code here
+        char[] new_str = str.toCharArray();
+        for(int i=str.length(); i>0; i--){
+            new_str[str.length()-i] = str.charAt(i-1);
+        }
+        return new String(new_str);
+    }
+}
+```
+
+
+
+---
+
+### N_38 螺旋矩阵
+
+**题目描述**：给定一个m x n大小的矩阵（m行，n列），按螺旋的顺序返回矩阵中的所有元素。
+
+示例1
+
+```
+输入：[[1,2,3],[4,5,6],[7,8,9]]
+返回值：[1,2,3,6,9,8,7,4,5]
+```
+
+```java
+import java.util.*;
+
+public class Solution {
+    public ArrayList<Integer> spiralOrder(int[][] matrix) {
+        ArrayList<Integer> res = new ArrayList<>();
+        if(matrix.length == 0)
+            return res;
+        int top = 0, bottom = matrix.length-1;
+        int left = 0, right = matrix[0].length-1;
+ 
+        while( top < (matrix.length+1)/2 && left < (matrix[0].length+1)/2 ){
+            //上面  左到右
+            for(int i = left; i <= right; i++){
+                res.add(matrix[top][i]);
+            }
+ 
+            //右边 上到下
+            for(int i = top+1; i <= bottom; i++){
+                res.add(matrix[i][right]);
+            }
+ 
+            //下面  右到左
+            for(int i = right-1; top!=bottom && i>=left; i--){
+                res.add(matrix[bottom][i]);
+            }
+ 
+            //左边 下到上
+            for(int i = bottom-1; left!=right && i>=top+1; i--){
+                res.add(matrix[i][left]);
+            }
+            ++top;
+            --bottom;
+            ++left;
+            --right;
+        }
+        return res;
+    }
+}
+```
+
+
+
+---
+
+### N_65 斐波那契数列
+
+**题目描述**：大家都知道斐波那契数列，现在要求输入一个整数n，请你输出斐波那契数列的第n项（从0开始，第0项为0，第1项是1）。
+
+```java
+public class Solution {
+    public int Fibonacci(int n) {
+        if(n==0) return 0;
+        int i=1;
+        int res = 1;
+        int temp = 0;
+        for(int j=3; j<=n; j++){
+            temp = res;
+            res += i;
+            i = temp;
+        }
+        return res;
+    }
+}
+```
+
+
+
+---
+
+### N_17 最长回文子串
+
+**题目描述**：对于一个字符串，请设计一个高效算法，计算其中最长回文子串的长度。
+
+给定字符串**A**以及它的长度**n**，请返回最长回文子串的长度。
+
+示例1
+
+输入：
+
+```
+输入："abc1234321ab",12
+返回值：7
+```
+
+```java
+import java.util.*;
+
+public class Solution {
+    public int getLongestPalindrome(String A, int n) {
+        // write code here
+//         int[][] res = new int[n+1][n+1];    // 里面的值默认都是0
+//         int maxLen = 0, end = 0;
+//         for(int i=1; i<=n; i++){
+//             for(int j=1; j<=n; j++){
+//                 if(A.charAt(i-1) == A.charAt(n-j)){
+//                     res[i][j] = res[i-1][j-1]+1;
+//                 }else{
+//                     res[i][j]=0;
+//                 }
+//                 if(maxLen<res[i][j]){
+//                     int beforeRev = n - j;
+//                     // 考虑到abc12cba这种字符串，所以要进行下标的对应判断
+//                     if(beforeRev + res[i][j] == i){    // 注意要进行判断，判断下标是否对应，否则像abc45cba这种字符串就会返回3
+//                         maxLen = res[i][j];
+//                         end = i;
+//                     }
+//                 }
+//             }
+//         }
+//         return maxLen;
+//         return A.substring(end-maxLen, end);
+        
+        
+        
+            //边界条件判断
+            if (n < 2)
+                return A.length();
+            //maxLen表示最长回文串的长度
+            int maxLen = 0;
+            for (int i = 0; i < n; ) {
+                //如果剩余子串长度小于目前查找到的最长回文子串的长度，直接终止循环
+                // （因为即使他是回文子串，也不是最长的，所以直接终止循环，不再判断）
+                if (n - i <= maxLen / 2)
+                    break;
+                int left = i;
+                int right = i;
+                while (right < n - 1 && A.charAt(right + 1) == A.charAt(right))
+                    ++right; //过滤掉重复的
+
+                //下次在判断的时候从重复的下一个字符开始判断
+                i = right + 1;
+                //然后往两边判断，找出回文子串的长度
+                while (right < n - 1 && left > 0 && A.charAt(right + 1) == A.charAt(left - 1)) {
+                    ++right;
+                    --left;
+                }
+                //保留最长的
+                if (right - left + 1 > maxLen) {
+                    maxLen = right - left + 1;
+                }
+            }
+            //截取回文子串
+            return maxLen;
+        }
+}
+```
+
+
+
+---
+
+### N_54 数组中相加和为0的三元组
+
+**题目描述**：给出一个有n个元素的数组S，S中是否有元素a,b,c满足a+b+c=0？找出数组S中所有满足条件的三元组。
+
+注意：三元组（a、b、c）中的元素必须按非降序排列。（即a≤b≤c）解集中不能包含重复的三元组。
+
+示例
+
+```
+输入：[0]
+返回值：[]
+
+输入：[-2,0,1,1,2]
+返回值：[[-2,0,2],[-2,1,1]]
+
+输入：[-10,0,10,20,-10,-40]
+返回值：[[-10,-10,20],[-10,0,10]]
+```
+
+```java
+import java.util.*;
+
+public class Solution {
+    public ArrayList<ArrayList<Integer>> threeSum(int[] num) {
+        Arrays.sort(num);
+        ArrayList<ArrayList<Integer>> list = new ArrayList<>();
+        for (int i = 0; i < num.length - 2; ++i) {
+            if (i != 0 && num[i - 1] == num[i]) continue;
+            int k = num.length - 1;
+            for (int j = i + 1; j < num.length - 1; ++j) {
+                if (j != i + 1 && num[j] == num[j - 1]) continue;
+                while (j < k && num[i] + num[j] + num[k] > 0) --k;
+                if (j == k) break;
+                if (num[i] + num[j] + num[k] == 0) {
+                    ArrayList<Integer> ele = new ArrayList<>();
+                    ele.add(num[i]);
+                    ele.add(num[j]);
+                    ele.add(num[k]);
+                    list.add(ele);
+                }
+            }
+        }
+        return list;
+    }
+}
+```
+
+
+
+---
+
+### N_12 重建二叉树
+
+**题目描述**：
+
+输入某二叉树的**前序遍历**和**中序遍历**的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
+
+```java
+/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+import java.util.*;
+
+public class Solution {
+    HashMap<Integer, Integer> memo = new HashMap<>();
+    int[] preorder;
+    public TreeNode reConstructBinaryTree(int [] pre,int [] in) {
+        for(int i=0; i<in.length; i++){
+            memo.put(in[i],i);
+        }
+        preorder = pre;
+        TreeNode root = buildTree(0, in.length-1, 0, pre.length-1);
+        return root;
+    }
+    
+    public TreeNode buildTree(int is, int ie, int ps, int pe){
+        if(ie<is || pe<ps){
+            return null;
+        }
+        int root_value = preorder[ps];
+        int ri = memo.get(root_value);
+        
+        TreeNode node = new TreeNode(root_value);
+        node.left = buildTree(is, ri-1, ps+1, ps+ri-is);
+        node.right = buildTree(ri+1, ie, ps+ri-is+1, pe);
+        return node;
+    }
+}
+```
+
+
+
+---
+
+### N_91 最长递增子序列
+
+**题目描述**：给定数组arr，设长度为n，输出arr的最长递增子序列。（如果有多个答案，请输出其中 按数值(注：区别于按单个字符的ASCII码值)进行比较的 字典序最小的那个）
+
+示例
+
+```
+输入：[2,1,5,3,6,4,8,9,7]
+返回值：[1,3,4,8,9]
+
+输入：[1,2,8,6,4]
+返回值：[1,2,4]
+其最长递增子序列有3个，（1，2，8）、（1，2，6）、（1，2，4）其中第三个 按数值进行比较的字典序 最小，故答案为（1，2，4） 
+```
+
+```java
+
+```
+
+
+
+---
+
+### N_32 求平方根
+
+**题目描述**：实现函数 int sqrt(int x)。计算并返回x的平方根（向下取整）
+
+```java
+import java.util.*;
+
+
+public class Solution {
+    /**
+     * 
+     * @param x int整型 
+     * @return int整型
+     */
+    public int sqrt (int x) {
+        // write code here
+        for(int i=1; i<=x/2+1; i++){
+            if((i+1)*(i+1)>x && i*i <= x){
+                return i;
+            }
+        }
+        return 0;
+        
+        // 二分法
+//         if (x <= 0)
+//             return x;
+//         long left = 1;
+//         long right = x;
+//         while(left < right) {
+//             long middle = (left + right) / 2;
+//             if (middle * middle <= x && (middle + 1) * (middle + 1) > x) {
+//                 return (int)middle;
+//             } else if (middle * middle < x) {
+//                 left = middle;
+//             } else {
+//                 right = middle;
+//             }
+//         }
+//         return (int) left;
+    }
+}
+```
+
+
+
+---
+
+### N_48 在旋转过的有序数组中寻找目标值
+
+**题目描述**：给定一个整数数组nums，按升序排序，数组中的元素各不相同。
+
+nums数组在传递给search函数之前，会在预先未知的某个下标 t（0 <= t <= nums.length-1）上进行旋转，让数组变为 [nums[t], nums[t+1], ..., nums[nums.length-1], nums[0], nums[1], ..., nums[t-1]]。
+
+比如，数组 [0,2,4,6,8,10] 在下标 2 处旋转之后变为 [6,8,10,0,2,4]
+
+现在给定一个旋转后的数组 nums 和一个整数 target ，请你查找这个数组是不是存在这个target，如果存在，那么返回它的下标，如果不存在，返回-1
+
+示例
+
+```
+输入：[6,8,10,0,2,4],10
+返回值：2
+
+输入：[6,8,10,0,2,4],3
+返回值：-1
+
+```
+
+```java
+import java.util.*;
+
+
+public class Solution {
+    /**
+     * 代码中的类名、方法名、参数名已经指定，请勿修改，直接返回方法规定的值即可
+     *
+     * 
+     * @param nums int整型一维数组 
+     * @param target int整型 
+     * @return int整型
+     */
+    public int search (int[] nums, int target) {
+        // write code here
+        int left = 0 , right = nums.length - 1;
+        while(left <= right){
+            int mid = left + ((right - left) / 2);//等价于 (right + left)/2
+            if(nums[mid] == target) 
+                return mid;
+            // 右边有序
+            if(nums[mid] < nums[right]){
+                if(target > nums[mid] && target <= nums[right]){
+                    left = mid + 1;
+                }else{
+                    right = mid - 1;
+                }
+            }else{
+                if(target >= nums[left] && target < nums[mid]){
+                    
+                    right = mid - 1;
+                }else{
+                    left = mid + 1;
+                }
+            }
+        }
+        return -1;
+    }
+}
+```
+
+
+
+---
+
+### N_90 设计getMin功能的栈
+
+**题目描述**：实现一个特殊功能的栈，在实现栈的基本功能的基础上，再实现返回栈中最小元素的操作。
+
+示例1
+
+```
+输入：[[1,3],[1,2],[1,1],[3],[2],[3]]
+返回值：[1,2]
+```
+
+备注：有三种操作种类，op1表示push，op2表示pop，op3表示getMin。你需要返回和op3出现次数一样多的数组，表示每次getMin的答案
+
+```java
+import java.util.*;
+
+
+public class Solution {
+    /**
+     * return a array which include all ans for op3
+     * @param op int整型二维数组 operator
+     * @return int整型一维数组
+     */
+    Stack<Integer> stack1 = new Stack<>();
+    Stack<Integer> stack2 = new Stack<>();
+    ArrayList<Integer> temp = new ArrayList<>();
+    public int[] getMinStack (int[][] op) {
+        // write code here
+        for(int i=0; i<op.length; i++){
+            if(op[i][0]==1){
+                push(op[i][1]);
+            }else if(op[i][0]==2){
+                pop();
+            }else{
+                temp.add(getMin());
+            }
+        }
+        int[] res = new int[temp.size()];
+        for(int i=0; i<temp.size(); i++){
+            res[i] = temp.get(i);
+        }
+        return res;
+    }
+    
+    public void push(int value){
+        stack1.push(value);
+        if(stack2.isEmpty() || stack2.peek()>=value){//条件是大于等于
+            stack2.push(value);
+        }
+    }
+    
+    public int pop(){
+        if(stack1.peek().equals(stack2.peek())){
+            stack2.pop();
+        }
+        return stack1.pop();
+    }
+    
+    public int getMin(){
+        return stack2.peek();
+    }
+}
+```
+
+
+
+---
+
+### N_7 股票（一次交易）
+
+更难的 [股票（两次交易）]()
+
+**题目描述**：假设你有一个数组，其中第 *i* 个元素是股票在第 *i* 天的价格。
+你有一次买入和卖出的机会。（只有买入了股票以后才能卖出）。请你设计一个算法来计算可以获得的最大收益。
+
+**示例：**
+
+```
+输入: [7,1,5,3,6,4]
+输出: 5
+解释: 在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格。
+```
+
+```java
+import java.util.*;
+
+public class Solution {
+    /**
+     * 
+     * @param prices int整型一维数组 
+     * @return int整型
+     */
+    public int maxProfit (int[] prices) {
+        // write code here
+        int cost = Integer.MAX_VALUE, profit = 0;
+        for(int price : prices) {
+            // 前i日最大利润=max(前(i−1)日最大利润, 第i日价格−前i日最低价格)
+            cost = Math.min(cost, price);//前i日最低价格
+            profit = Math.max(profit, price - cost);
+        }
+        return profit;
+    }
+}
+```
+
+
+
+### N_51 合并k个有序链表
+
+**题目描述**：合并 *k* 个已排序的链表并将其作为一个已排序的链表返回。分析并描述其复杂度。
+
+示例：
+
+```
+输入：  [{1,2,6},{},{3,5,6,7}]
+返回值：{1,2,3,4,5,6,7}
+```
+
+参考代码，自己写的
+
+```java
+import java.util.*;
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public ListNode mergeKLists(ArrayList<ListNode> lists) {
+
+        Queue<ListNode>  queue = new LinkedList<ListNode>();
+        int j = 0;
+        ListNode node = null;    //用于保存剩余节点中，最小的节点
+        for(; j<lists.size(); j++){
+            if(lists.get(j) != null){
+                node = lists.get(j);
+                break;
+            }
+        }
+        if(node == null){
+            return null;
+        }
+        
+        ListNode root = new ListNode(-1);
+        ListNode p = root;
+        ListNode temp;
+        for(int i =j+1; i<lists.size(); i++){
+            temp = lists.get(i);
+            if(temp == null){
+                continue;
+            }
+            if(node.val > temp.val){
+                queue.offer(node);
+                node = temp;
+            }else{
+                queue.offer(temp);
+            }
+        }
+        if(node.next != null){
+            queue.offer(node.next);
+        }
+        
+        p.next = node;
+        p = p.next;
+        
+        while(!queue.isEmpty()){
+            int n = queue.size()-1;
+            node = queue.poll();
+            for(int i=0; i<n; i++){
+                temp = queue.poll();
+                if(node.val > temp.val){
+                    queue.offer(node);
+                    node = temp;
+                }else{
+                    queue.offer(temp);
+                }
+            }
+            if(node.next!=null){
+                queue.offer(node.next);
+            }
+            p.next = node;
+            p = p.next;
+        }
+        return root.next;
+    }
+}
+```
+
+### N_121 字符串的排列
+
+
+
+
+
+
+
+### N_128 容器盛水问题
