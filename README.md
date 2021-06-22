@@ -11,5 +11,5 @@
 - `DynamicProgramming.md`：动态规划相关题解。
 - `NowCoder_top200.md`：牛客的题库的 **高频TOP200** 
 - `Top10_SortAlgorithm.md`：十大经典算法总结，参考自：[我是链接](https://www.cnblogs.com/guoyaohua/p/8600214.html)
-- 
+- `_AlgorithmCollection.md`：前面提到的算法都在这里面
 
